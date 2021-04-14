@@ -1,5 +1,4 @@
 name: Go
-
 on:
   push:
     branches: [ master ]
@@ -9,9 +8,15 @@ on:
 jobs:
 
   build:
+    runs-on: ubuntu-latest
+    container: golang:1.12-alpine
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
     env:
       TEST_RESULTS: /tmp/test-results
-    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
 
@@ -25,6 +30,6 @@ jobs:
 
     - name: Test
       env:
-        CONTACTS_DB_URL: "postgres://circleci-demo-go@localhost:5432/circle_test?sslmode=disable"
+        CONTACTS_DB_URL: "postgres://postgres@localhost:5432/postgres?sslmode=disable"
         CONTACTS_DB_MIGRATIONS: /home/circleci/project/db/migrations
       run: go test -v ./...
